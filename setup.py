@@ -4,12 +4,12 @@ from os.path import exists
 from setuptools import setup, find_packages
 
 author = 'mathcube'
-email = 'mathcube7.gmail.com'
+email = 'mathcube7@gmail.com'
 description = 'Easy and fast math typesetting with Python'
 name = 'swiftex'
 year = '2021'
 url = 'https://github.com/mathcube7/swiftex'
-version = '0.0.1'
+version = '0.0.2'
 
 setup(
     name=name,
@@ -24,7 +24,7 @@ setup(
     description=description,
     long_description=open('README.md').read() if exists('README.md') else '',
     long_description_content_type="text/markdown",
-    install_requires=['sphinx',
+    install_requires=['sphinx', 'IPython',
                       ],
     python_requires=">=3.6",
     classifiers=['Operating System :: OS Independent',

@@ -3,8 +3,13 @@ from IPython.display import Math, display
 
 class Symbol:
 
-    def __init__(self, latex_string):
+    def __init__(self, latex_string, tag=None):
+        if isinstance(latex_string, Symbol):
+            latex_string = str(latex_string)
         self.latex_string = latex_string
+        if tag:
+            assert isinstance(tag, str)
+            _expr_store[tag] = self
 
     def __str__(self):
         return self.latex_string
@@ -29,6 +34,10 @@ class Symbol:
         s = '%s + %s' % (str(self), str(other))
         return Symbol(s)
 
+    def __radd__(self, other):
+        s = '%s + %s' % (str(other), str(self))
+        return Symbol(s)
+
     def __eq__(self, other):
         s = '%s = %s' % (str(self), str(other))
         return Symbol(s)
@@ -39,6 +48,21 @@ class Symbol:
     def __mul__(self, other):
         return Symbol('%s %s' % (str(self), str(other)))
 
+    def __rmul__(self, other):
+        return Symbol('%s %s' % (str(other), str(self)))
+
+    def __sub__(self, other):
+        s = '%s - %s' % (str(self), str(other))
+        return Symbol(s)
+
+    def __rsub__(self, other):
+        s = '%s - %s' % (str(other), str(self))
+        return Symbol(s)
+
+    def __rshift__(self, other):
+        assert isinstance(other, str)
+        return self
+
     def _ipython_display_(self, **kwargs):
         display(Math(str(self)))
 
@@ -48,8 +72,23 @@ class Symbol:
 
 class Int(Symbol):
 
-    def __init__(self, lower='', upper=''):
-        super().__init__('\\int_{%s}^{%s}' % (str(lower), str(upper)))
+    def __init__(self, lower='', upper='', **kwargs):
+        super().__init__('\\int_{%s}^{%s}' % (str(lower), str(upper)), **kwargs)
+
+
+class Frac(Symbol):
+
+    def __init__(self, numer, denom, **kwargs):
+        self.numer = Symbol(numer)
+        self.denom = Symbol(denom)
+        super().__init__('\\frac{%s}{%s}' % (self.numer, self.denom), **kwargs)
+
+
+class Sqrt(Symbol):
+
+    def __init__(self, arg, **kwargs):
+        self.arg = Symbol(arg)
+        super().__init__('\\sqrt{%s}' % self.arg, **kwargs)
 
 
 def symbols(string):
@@ -58,5 +97,11 @@ def symbols(string):
         return Symbol(string)
     return [Symbol(part.strip()) for part in parts]
 
+
+def get(tag):
+    return _expr_store.get(tag)
+
+
+_expr_store = {}
 
 oo = Symbol(r'\infty')

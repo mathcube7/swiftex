@@ -89,3 +89,36 @@ class TestIntegral(unittest.TestCase):
     def test_integral_no_limits(self):
         expr = Int() * f(x, y) * dx
         self.assertEqual(r'\int f \left( x, y \right) ^{2} dx', expr)
+
+
+class TestFrac(unittest.TestCase):
+
+    def test_simple_fraction_as_strings(self):
+        actual = Frac('a + b', 'c + d')
+        self.assertEqual(r'\frac{a + b}{c + d}', actual)
+
+    def test_simple_fraction_as_symbols(self):
+        actual = Frac(a+b, c+d)
+        self.assertEqual(r'\frac{a + b}{c + d}', actual)
+
+
+class TestSqrt(unittest.TestCase):
+
+    def test_sqrt_with_str_arg(self):
+        actual = Sqrt('b^2 - 4ac')
+        self.assertEqual(r'\sqrt{b^2 - 4ac}', actual)
+
+    def test_sqrt_with_symbol_arg(self):
+        actual = Sqrt(b**2 - 4 * a * c)
+        self.assertEqual(r'\sqrt{b^2 - 4 a c}', actual)
+
+
+class TestTagging(unittest.TestCase):
+
+    def test_tag_and_retrieve_subexpression(self):
+        Frac(-b + Sqrt(b**2 - 4*a*c, tag='the_root'), 2*a)
+        actual = get('the_root')
+        self.assertEqual(str(Sqrt(b**2 - 4*a*c)), actual)
+
+
+

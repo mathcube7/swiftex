@@ -121,4 +121,48 @@ class TestTagging(unittest.TestCase):
         self.assertEqual(str(Sqrt(b**2 - 4*a*c)), actual)
 
 
+class TestMatrix(unittest.TestCase):
 
+    def test_constant_matrix(self):
+        A = Matrix(2, 2, default=1)
+        expected = r'\left(' \
+                   r'\begin{matrix}' \
+                   r'1 & 1 \\' \
+                   r'1 & 1 ' \
+                   r'\end{matrix}' \
+                   r'\right)'
+        self.assertEqual(expected, A)
+
+    def test_set_matrix_by_index(self):
+        A = Matrix(2, 2, default=0)
+        A[0, 1] = 1
+        A[1, 0] = 1
+        expected = r'\left(' \
+                   r'\begin{matrix}' \
+                   r'0 & 1 \\' \
+                   r'1 & 0 ' \
+                   r'\end{matrix}' \
+                   r'\right)'
+        self.assertEqual(expected, A)
+
+    def test_matrix_slice_with_constant(self):
+        A = Matrix(3, 3, default=0)
+        A[1, :] = 1
+        expected = B = Matrix(3, 3, default=0)
+        B[1, 0] = 1
+        B[1, 1] = 1
+        B[1, 2] = 1
+        self.assertEqual(str(expected), str(A))
+
+    def test_matrix_slice_with_sequence(self):
+        A = Matrix(3, 3, default=0)
+        A[1, :] = 1, 2, 3
+        expected = B = Matrix(3, 3, default=0)
+        B[1, 0] = 1
+        B[1, 1] = 2
+        B[1, 2] = 3
+        self.assertEqual(str(expected), str(A))
+
+    def test_brace(self):
+        actual = brace(a+b)**2
+        self.assertEqual('(a + b)^2', actual)

@@ -91,12 +91,75 @@ class Sqrt(Symbol):
         super().__init__('\\sqrt{%s}' % self.arg, **kwargs)
 
 
+class Matrix(Symbol):
+
+    def __init__(self, nrows, ncols, default='', **kwargs):
+        self.values = {}
+        self.nrows = nrows
+        self.ncols = ncols
+
+        for i in range(nrows):
+            for j in range(ncols):
+                self.values[(i, j)] = Symbol(str(default))
+
+        super().__init__(str(self), **kwargs)
+
+    def __setitem__(self, idx, value):
+        assert len(idx) == 2
+
+        row_inds = self._expand_slice(idx[0], self.nrows)
+        col_inds = self._expand_slice(idx[1], self.ncols)
+
+        k = 0
+        for i in row_inds:
+
+            for j in col_inds:
+                if hasattr(value, '__len__'):
+                    self.values[i, j] = Symbol(str(value[k]))
+                else:
+                    self.values[i, j] = Symbol(str(value))
+                k += 1
+
+    def _expand_slice(self, slice_or_ind, max_vals):
+        if isinstance(slice_or_ind, slice):
+            if slice_or_ind.start is None:
+                start = 0
+            else:
+                start = slice_or_ind.start
+            if slice_or_ind.stop is None:
+                stop = max_vals
+            else:
+                stop = slice_or_ind.stop
+            inds = list(range(start, stop))
+        else:
+            inds = [slice_or_ind]
+        return inds
+
+    def __str__(self):
+        s = r'\left(\begin{matrix}'
+        for i in range(self.nrows):
+            for j in range(self.ncols):
+                s += str(self.values[i, j])
+                if j < self.ncols - 1:
+                    s += ' & '
+                elif i < self.nrows - 1:
+                    s += r'\\'
+        s += r'\end{matrix}\right)'
+        return s
+
+    def __repr__(self):
+        return self.__str__()
+
+
 def symbols(string):
     parts = string.split(',')
     if len(parts) == 1:
         return Symbol(string)
     return [Symbol(part.strip()) for part in parts]
 
+
+def brace(expr):
+    return r'\left(' * expr * r'\right)'
 
 def get(tag):
     return _expr_store.get(tag)

@@ -9,7 +9,7 @@ description = 'Easy and fast math typesetting with Python'
 name = 'swiftex'
 year = '2021'
 url = 'https://github.com/mathcube7/swiftex'
-version = '0.0.2'
+version = '0.0.4'
 
 setup(
     name=name,
